@@ -8,6 +8,9 @@ import json
 # from abc import ABCMeta, abstractmethod, abstractstaticmethod
 
 
+# --------------------------------------------------------------------
+
+
 # Need to implement some checks here for new files and last_used_ID being null / none
 class UniqueIDGenerator():
     _last_ID_used: int
