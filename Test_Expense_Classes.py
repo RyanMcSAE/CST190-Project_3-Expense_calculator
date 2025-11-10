@@ -27,6 +27,10 @@ class UniqueIDGenerator():
     @staticmethod
     def get_last_used_ID() -> int:
         return UniqueIDGenerator._last_ID_used
+    
+    @staticmethod
+    def set_last_used_ID(last_used_ID: int):
+        UniqueIDGenerator._last_ID_used = last_used_ID
 
 # Enum probably not the best choice as modification in future may produce errors
 class ExpenseType(Enum):
@@ -84,16 +88,6 @@ class Expense:
     
     def set_date_of_expense(self, date_of_expense: date):
         self._date_of_expense = date_of_expense
-
-
-    # def get_info(self) -> str:
-    #     s = ""
-    #     s += "Expense ID: " + str(self.get_ID()) + "\n"
-    #     s += "Name: " + str(self.get_name()) + "\n"
-    #     s += "Amount: $" + str(self.get_amount_in_decimal()) + "\n"
-    #     s += "Expense Type: " + str(self.get_expense_type()) + "\n"
-    #     s += "Date of Expense: " + str(self.get_date_of_expense())
-    #     return s
     
     def get_info(self) -> str:
         s = ""
@@ -171,27 +165,32 @@ class ReoccurringExpense:
         for expense in self._expense_list:
             s += expense.get_info() + "\n"
             s += " - - - - - - - - - - -" + "\n"
-        # s += str(self._expense_list[0].get_info())
 
-
-        # s += str(type(self._expense_list)) + "\n"
-        # s += str(type(self._expense_list[0])) + "\n"
-        # s += str(self._expense_list[0]) + "\n"
-        # s += str(self._expense_list[1]) + "\n"
-        # s += str(self._expense_list[2]) + "\n"
-        # s += str(self._expense_list[3])
         return s
             
     
 
 def main():
-    testing()
+    expense_list: List[Expense]
+    reoccurring_expense_list: List[ReoccurringExpense]
+    # Check if save file exists and load it into the progrram is if does
+    if save_file_exists() == True:
+        last_used_ID: int = int(load_last_used_ID())
+        UniqueIDGenerator.set_last_used_ID(last_used_ID)
+        expense_list = load_expense_data()
+        reoccurring_expense_list = load_reoccurring_expense_data()
+    else:
+        UniqueIDGenerator.set_last_used_ID(0)
+        create_save_file()
+
+
+    # testing()
 
 def testing():
     print("\n" + "------------------------- TESTING -------------------------" + "\n")
     UniqueIDGenerator(0)
 
-    reoccurring_expenses = load_reoccurring_save_file()
+    reoccurring_expenses = load_reoccurring_expense_data()
     print(reoccurring_expenses[0].get_info())
 
     v = testing_generate_reoccurring_expense()
@@ -206,15 +205,15 @@ def testing_generate_reoccurring_expense() -> ReoccurringExpense:
     return m
     
 
-def create_expense_obj_from_dict(expense: dict) -> Expense:
-    id = expense["id"]
-    name = expense["name"]
-    amount = expense["amount"]
+def create_expense_obj_from_dict(expense_input: dict) -> Expense:
+    id: int = (expense_input["id"])
+    name: str = expense_input["name"]
+    amount: int = expense_input["amount"]
 
-    t = expense["expense_type"]
+    t = expense_input["expense_type"]
     expense_type: ExpenseType = ExpenseType(t)
 
-    s: str = str(expense["date_of_expense"])
+    s: str = str(expense_input["date_of_expense"])
     year: int = int(s[0:4])
     month: int = int(s[4:6])
     day: int = int(s[6:8])
@@ -222,9 +221,17 @@ def create_expense_obj_from_dict(expense: dict) -> Expense:
 
     expense: Expense = Expense(id, name, amount, expense_type, date_of_expense)
     return expense
+
+def load_last_used_ID() -> int:
+    path = os.getcwd() + r"\Expense Data.json"
+    with open(path) as f:
+        expense_data = json.load(f)
     
+    last_used_ID = expense_data["LastUsedID"]
+    return last_used_ID
+
 # UniqueIDGenerator needs to be set up when load files functions are combined
-def load_save_file() -> List[Expense]:
+def load_expense_data() -> List[Expense]:
     path = os.getcwd() + r'\Expense Data.json'
     with open(path) as f:
         expenses = json.load(f)
@@ -251,7 +258,7 @@ def load_save_file() -> List[Expense]:
     return expense_list
 
 
-def load_reoccurring_save_file() -> List[ReoccurringExpense]:
+def load_reoccurring_expense_data() -> List[ReoccurringExpense]:
     path = os.getcwd() + r'\Expense Data.json'
     with open(path) as f:
         expenses = json.load(f)
