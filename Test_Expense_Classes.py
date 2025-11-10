@@ -106,7 +106,7 @@ class Expense:
 
 class ReoccurringExpense:
 
-    def __init__(self, ID: int, name: str, amount: int, expense_type: ExpenseType, frequency: int, start_date: date, end_date: date, expense_list: List[Expense] = None):
+    def __init__(self, ID: int, name: str, amount: int, expense_type: ExpenseType, frequency: int, start_date: date, end_date: date, expense_list = None):
         self._ID: int = ID
         self._name: str = name
         self._amount: int = amount
@@ -114,16 +114,17 @@ class ReoccurringExpense:
         self._frequency: int = frequency
         self._start_date: date = start_date
         self._end_date: date = end_date
-        self._expense_list: List[Expense] = expense_list
-        # self._expense_list: List[Expense] = []
+        self._expense_list: List[Expense] = []
 
-        ### Populate _expense_list if no List[Expense] provided in parameters
-        if self._expense_list == None:
+        if expense_list == None:
             self._current_date: date = self._start_date
             while self._current_date <= self._end_date:
                 n = Expense(UniqueIDGenerator.generate_ID(), self._name, self._amount, self._expense_type, self._current_date)
                 self._expense_list.append(n)
                 self._current_date += timedelta(days = self._frequency)
+        else:
+            self._expense_list: List[Expense] = expense_list
+
  
     # No ID setter required as ID should remain constant after object creation
     def get_ID(self):
@@ -188,8 +189,21 @@ def main():
 
 def testing():
     print("\n" + "------------------------- TESTING -------------------------" + "\n")
+    UniqueIDGenerator(0)
+
     reoccurring_expenses = load_reoccurring_save_file()
     print(reoccurring_expenses[0].get_info())
+
+    v = testing_generate_reoccurring_expense()
+    print(v.get_info())
+
+def testing_generate_expense() -> Expense:
+    n = Expense(UniqueIDGenerator.generate_ID(), "Electricity Bill", 14508, ExpenseType(1), date(2022, 12, 10))
+    return n
+
+def testing_generate_reoccurring_expense() -> ReoccurringExpense:
+    m = ReoccurringExpense(UniqueIDGenerator.generate_ID(), "Hamburger Payments", 1500, ExpenseType(3), 3, date(2025,9,9), date(2025, 11, 11))
+    return m
     
 
 def create_expense_obj_from_dict(expense: dict) -> Expense:
@@ -302,13 +316,7 @@ def save_file_delete() -> bool:
 
 
 
-def testing_generate_expense() -> Expense:
-    n = Expense(UniqueIDGenerator.generate_ID(), "Electricity Bill", 14508, ExpenseType(1), date(2022, 12, 10))
-    return n
 
-def testing_generate_reoccurring_expense() -> ReoccurringExpense:
-    m = ReoccurringExpense(UniqueIDGenerator.generate_ID(), "Hamburger Payments", 1500, ExpenseType(3), 3, date(2025,9,9), date(2025, 11, 11))
-    return m
 
 
     
