@@ -168,7 +168,27 @@ class ReoccurringExpense:
 
         return s
             
+class CurrrentExpenseLists:
+    current_expense_list: List[Expense]
+    current_reoccuring_expense_list: List[ReoccurringExpense]
+
+    @staticmethod
+    def set_current_expense_list(expense_list_input: List[Expense]):
+        CurrrentExpenseLists.current_expense_list = expense_list_input
+
+    @staticmethod
+    def get_current_expense_list() -> List[Expense]:
+        return CurrrentExpenseLists.current_expense_list
     
+    @staticmethod
+    def set_current_reoccurrring_expense_list(reoccurring_epense_list_input: List[ReoccurringExpense]):
+        CurrrentExpenseLists.current_reoccuring_expense_list = reoccurring_epense_list_input
+
+    @staticmethod
+    def get_current_reoccurring_expense_list() -> List[ReoccurringExpense]:
+        return CurrrentExpenseLists.current_reoccuring_expense_list
+
+
 
 def main():
     expense_list: List[Expense]
@@ -184,7 +204,8 @@ def main():
         create_save_file()
 
 
-    # testing()
+
+
 
 def testing():
     print("\n" + "------------------------- TESTING -------------------------" + "\n")
@@ -206,7 +227,7 @@ def testing_generate_reoccurring_expense() -> ReoccurringExpense:
     
 
 def create_expense_obj_from_dict(expense_input: dict) -> Expense:
-    id: int = (expense_input["id"])
+    id: int = expense_input["id"]
     name: str = expense_input["name"]
     amount: int = expense_input["amount"]
 
