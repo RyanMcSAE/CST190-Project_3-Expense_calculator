@@ -188,7 +188,9 @@ class CurrrentExpenseLists:
     def get_current_reoccurring_expense_list() -> List[ReoccurringExpense]:
         return CurrrentExpenseLists.current_reoccuring_expense_list
 
-
+    ####################################### ##### #### #### ## ### #######################################
+    ####################################### # # # ### # ### ## # # #######################################
+    ####################################### ## ## ## ### ## ## ### #######################################
 
 def main():
     expense_list: List[Expense]
@@ -201,11 +203,18 @@ def main():
         reoccurring_expense_list = load_reoccurring_expense_data()
     else:
         UniqueIDGenerator.set_last_used_ID(0)
+        expense_list = []
+        reoccurring_expense_list = []
         create_save_file()
 
+    # Load CurrentExpenseLists static class with expense lists
+    # Not sure if this a good way to go about it but the static CurrentExpenseList class will hold the currently used expense lists and can be called easily by other functions
+    CurrrentExpenseLists.set_current_expense_list(expense_list)
+    CurrrentExpenseLists.set_current_reoccurrring_expense_list(reoccurring_expense_list)
 
-
-
+    ####################################### ##### #### #### ## ### #######################################
+    ####################################### # # # ### # ### ## # # #######################################
+    ####################################### ## ## ## ### ## ## ### #######################################
 
 def testing():
     print("\n" + "------------------------- TESTING -------------------------" + "\n")
