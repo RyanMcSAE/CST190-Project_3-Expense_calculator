@@ -229,6 +229,8 @@ def main():
     CurrrentExpenseLists.set_current_expense_list(expense_list)
     CurrrentExpenseLists.set_current_reoccurrring_expense_list(reoccurring_expense_list)
 
+    create_dict_from_reoccurring_expense_obj(reoccurring_expense_list[0])
+
 
     ####################################### ##### #### #### ## ### #######################################
     ####################################### # # # ### # ### ## # # #######################################
@@ -262,8 +264,8 @@ def create_dict_from_expense_obj(expense_obj_input: Expense) -> dict[str, Union[
     output_dict["date_of_expense"] = date_string
     return output_dict
 
-def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: ReoccurringExpense) -> dict[str, Union[int, str, List[Expense]]]:
-    output_dict: dict[str, Union[int, str, List[Expense]]] = {}
+def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: ReoccurringExpense) -> dict[str, Union[int, str, List[dict[str, Union[int, str]]]]]:
+    output_dict: dict[str, Union[int, str, List[dict[str, Union[int, str]]]]] = {}
     output_dict["id"] = int(reoccurring_expense_input.get_ID())
     output_dict["name"] = str(reoccurring_expense_input.get_name())
     output_dict["amount"] = int(reoccurring_expense_input.get_amount_in_cents())
@@ -273,14 +275,16 @@ def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: Reoccurr
     end_date_string = create_string_from_date(reoccurring_expense_input.get_end_date())
     output_dict["end_date"] = end_date_string
 
-    ##### expense data
-    expense_list: List[dict[str, Union[str, int]]] = []
+    expense_list: List[dict[str, Union[int, str]]] = []
     for expense in reoccurring_expense_input.get_expense_list():
         expense_dict: dict[str, Union[int, str]] = create_dict_from_expense_obj(expense)
-        
-        expense_list.append[list(expense_dict)]
+        print(expense_dict)
+        expense_list.append(expense_dict)
+
+    output_dict["expense_list"] = expense_list
 
     return output_dict
+
 
 def create_string_from_date(date_input: date) -> str:
     year = date_input.year

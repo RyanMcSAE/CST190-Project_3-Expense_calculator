@@ -1,0 +1,21 @@
+{
+    "LastUsedID": 7,
+
+    "Expense": [
+        {"id": 1, "name": "Movie", "amount": 2000, "expense_type": 3, "date_of_expense": 20251005},
+        {"id": 2, "name": "Electricity Bill", "amount": 15000, "expense_type": 2, "date_of_expense": 20251112}
+
+    ],
+    
+    "ReoccurringExpense": [
+        {"id": 3, "name": "Mortgage Repayement", "amount": 10000, "expense_type": 5, "frequency": 1, "start_date": 20250903, "end_date": 2025096,
+        "expense_list": [
+            {"id": 4, "name": "Mortgage Repayement", "amount": 10000, "expense_type": 5, "date_of_expense": 20250903},
+            {"id": 5, "name": "Mortgage Repayement", "amount": 10000, "expense_type": 5, "date_of_expense": 20250904},
+            {"id": 6, "name": "Mortgage Repayement", "amount": 10000, "expense_type": 5, "date_of_expense": 20250905},
+            {"id": 7, "name": "Mortgage Repayement", "amount": 10000, "expense_type": 5, "date_of_expense": 20250906}
+            ]
+        }
+
+    ]
+}
