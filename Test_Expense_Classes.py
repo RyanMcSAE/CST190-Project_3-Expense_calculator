@@ -1,6 +1,6 @@
 from enum import Enum
 from datetime import date, timedelta
-from typing import List
+from typing import List, Dict
 import os
 import json
 # from os.path import exists # <- "exists" can be used instead of "os.path.exists" 
@@ -80,6 +80,9 @@ class Expense:
     def get_expense_type(self):
         return self._expense_type.name
     
+    def get_expense_type_index(self):
+        return self._expense_type.value
+    
     def set_expense_type(self, expense_type: ExpenseType):
         self._expense_type = expense_type
 
@@ -132,6 +135,9 @@ class ReoccurringExpense:
     
     def get_expense_type(self):
         return self._expense_type
+    
+    def get_expense_type_index(self):
+        return self._expense_type.value
     
     def set_expense_type(self, expense_type: ExpenseType):
         self._expense_type = expense_type
@@ -212,6 +218,9 @@ def main():
     CurrrentExpenseLists.set_current_expense_list(expense_list)
     CurrrentExpenseLists.set_current_reoccurrring_expense_list(reoccurring_expense_list)
 
+    test_dict: dict = create_dict_from_expense_obj(expense_list[0])
+    print(test_dict)
+
     ####################################### ##### #### #### ## ### #######################################
     ####################################### # # # ### # ### ## # # #######################################
     ####################################### ## ## ## ### ## ## ### #######################################
@@ -234,6 +243,23 @@ def testing_generate_reoccurring_expense() -> ReoccurringExpense:
     m = ReoccurringExpense(UniqueIDGenerator.generate_ID(), "Hamburger Payments", 1500, ExpenseType(3), 3, date(2025,9,9), date(2025, 11, 11))
     return m
     
+def create_dict_from_expense_obj(expense_obj_input: Expense) -> dict:
+    return_dict: dict = {}
+    return_dict["ID"] = int(expense_obj_input.get_ID())
+    return_dict["name"] = str(expense_obj_input.get_name())
+    return_dict["amount"] = int(expense_obj_input.get_amount_in_cents())   
+    return_dict["expense_type"] = int(expense_obj_input.get_expense_type_index())
+    date_string: str = create_string_from_date(expense_obj_input.get_date_of_expense())
+    return_dict["date_of_expense"] = date_string
+    return return_dict
+
+def create_string_from_date(date_input: date) -> str:
+    year = date_input.year
+    month = date_input.month
+    day = date_input.day
+    s = str(year) + str(month) + str(day)
+    return s
+
 
 def create_expense_obj_from_dict(expense_input: dict) -> Expense:
     id: int = expense_input["id"]
@@ -351,8 +377,8 @@ def save_file_delete() -> bool:
     except:
         return False
 
-
-
+def save_expense_to_file(Expense) -> bool:
+    return True
 
 
 
