@@ -1,6 +1,6 @@
 from enum import Enum
 from datetime import date, timedelta
-from typing import List, Dict
+from typing import List, Union
 import os
 import json
 # from os.path import exists # <- "exists" can be used instead of "os.path.exists" 
@@ -132,6 +132,16 @@ class ReoccurringExpense:
     
     def set_name(self, name: str):
         self._name: str = name
+
+    def get_amount_in_cents(self):
+        return self._amount
+    
+    def set_amount_in_cents(self, amount: int):
+        self._amount = amount
+
+    def get_amount_in_decimal(self):
+        x: float = float(self._amount / 100)
+        return x
     
     def get_expense_type(self):
         return self._expense_type
@@ -164,6 +174,7 @@ class ReoccurringExpense:
         s = "Type: Reoccurring Expense" + "\n"
         s += "ID: " + str(self.get_ID()) + "\n"
         s += "Name: " + str(self.get_name()) + "\n"
+        s += "Amount: " + str(self.get_amount_in_decimal()) + "\n"
         s += "Frequency: " + str(self.get_frequency()) + "\n"
         s += "Start Date: " + str(self.get_start_date()) + "\n"
         s += "End Date: " + str(self.get_end_date()) + "\n"
@@ -201,7 +212,7 @@ class CurrrentExpenseLists:
 def main():
     expense_list: List[Expense]
     reoccurring_expense_list: List[ReoccurringExpense]
-    # Check if save file exists and load it into the progrram is if does
+    # Check if save file exists and load it into the program is if does
     if save_file_exists() == True:
         last_used_ID: int = int(load_last_used_ID())
         UniqueIDGenerator.set_last_used_ID(last_used_ID)
@@ -218,8 +229,6 @@ def main():
     CurrrentExpenseLists.set_current_expense_list(expense_list)
     CurrrentExpenseLists.set_current_reoccurrring_expense_list(reoccurring_expense_list)
 
-    test_dict: dict = create_dict_from_expense_obj(expense_list[0])
-    print(test_dict)
 
     ####################################### ##### #### #### ## ### #######################################
     ####################################### # # # ### # ### ## # # #######################################
@@ -243,15 +252,35 @@ def testing_generate_reoccurring_expense() -> ReoccurringExpense:
     m = ReoccurringExpense(UniqueIDGenerator.generate_ID(), "Hamburger Payments", 1500, ExpenseType(3), 3, date(2025,9,9), date(2025, 11, 11))
     return m
     
-def create_dict_from_expense_obj(expense_obj_input: Expense) -> dict:
-    return_dict: dict = {}
-    return_dict["ID"] = int(expense_obj_input.get_ID())
-    return_dict["name"] = str(expense_obj_input.get_name())
-    return_dict["amount"] = int(expense_obj_input.get_amount_in_cents())   
-    return_dict["expense_type"] = int(expense_obj_input.get_expense_type_index())
+def create_dict_from_expense_obj(expense_obj_input: Expense) -> dict[str, Union[int, str]]:
+    output_dict: dict[str, Union[int, str]] = {}
+    output_dict["id"] = int(expense_obj_input.get_ID())
+    output_dict["name"] = str(expense_obj_input.get_name())
+    output_dict["amount"] = int(expense_obj_input.get_amount_in_cents())   
+    output_dict["expense_type"] = int(expense_obj_input.get_expense_type_index())
     date_string: str = create_string_from_date(expense_obj_input.get_date_of_expense())
-    return_dict["date_of_expense"] = date_string
-    return return_dict
+    output_dict["date_of_expense"] = date_string
+    return output_dict
+
+def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: ReoccurringExpense) -> dict[str, Union[int, str, List[Expense]]]:
+    output_dict: dict[str, Union[int, str, List[Expense]]] = {}
+    output_dict["id"] = int(reoccurring_expense_input.get_ID())
+    output_dict["name"] = str(reoccurring_expense_input.get_name())
+    output_dict["amount"] = int(reoccurring_expense_input.get_amount_in_cents())
+    output_dict["expense_type"] = int(reoccurring_expense_input.get_expense_type_index())
+    start_date_string = create_string_from_date(reoccurring_expense_input.get_start_date())
+    output_dict["start_date"] = start_date_string
+    end_date_string = create_string_from_date(reoccurring_expense_input.get_end_date())
+    output_dict["end_date"] = end_date_string
+
+    ##### expense data
+    expense_list: List[dict[str, Union[str, int]]] = []
+    for expense in reoccurring_expense_input.get_expense_list():
+        expense_dict: dict[str, Union[int, str]] = create_dict_from_expense_obj(expense)
+        
+        expense_list.append[list(expense_dict)]
+
+    return output_dict
 
 def create_string_from_date(date_input: date) -> str:
     year = date_input.year
@@ -261,10 +290,10 @@ def create_string_from_date(date_input: date) -> str:
     return s
 
 
-def create_expense_obj_from_dict(expense_input: dict) -> Expense:
-    id: int = expense_input["id"]
-    name: str = expense_input["name"]
-    amount: int = expense_input["amount"]
+def create_expense_obj_from_dict(expense_input: dict[str, Union[int, str]]) -> Expense:
+    id: int = int(expense_input["id"])
+    name: str = str(expense_input["name"])
+    amount: int = int(expense_input["amount"])
 
     t = expense_input["expense_type"]
     expense_type: ExpenseType = ExpenseType(t)
