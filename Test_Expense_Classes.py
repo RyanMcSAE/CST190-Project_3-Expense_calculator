@@ -229,12 +229,29 @@ def main():
     CurrrentExpenseLists.set_current_expense_list(expense_list)
     CurrrentExpenseLists.set_current_reoccurrring_expense_list(reoccurring_expense_list)
 
-    create_dict_from_reoccurring_expense_obj(reoccurring_expense_list[0])
+    # test_dict1 = create_dict_from_expense_obj(expense_list[0])
+    # test_dict2 = create_dict_from_reoccurring_expense_obj(reoccurring_expense_list[0])
+    # print(test_dict1)
+    # print(test_dict2)
+
+    test_expense = Expense(8, "Car Rego", 120000, ExpenseType(1), date(2025, 11, 5))
+    test_dict = create_dict_from_expense_obj(test_expense)
+    save_expense_data(test_dict)
 
 
     ####################################### ##### #### #### ## ### #######################################
     ####################################### # # # ### # ### ## # # #######################################
     ####################################### ## ## ## ### ## ## ### #######################################
+# a, a+, w, w+, and r+ <- note to self learn about these
+def save_expense_data(input) -> bool:
+    path = os.getcwd() + r"\Expense Data.json"
+    with open(path, 'r+') as f:
+        file_data = json.load(f)
+        file_data["Expense"].append(input)
+        print(file_data)
+        json.dump(file_data, f)
+        return True
+    
 
 def testing():
     print("\n" + "------------------------- TESTING -------------------------" + "\n")
@@ -278,7 +295,6 @@ def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: Reoccurr
     expense_list: List[dict[str, Union[int, str]]] = []
     for expense in reoccurring_expense_input.get_expense_list():
         expense_dict: dict[str, Union[int, str]] = create_dict_from_expense_obj(expense)
-        print(expense_dict)
         expense_list.append(expense_dict)
 
     output_dict["expense_list"] = expense_list
