@@ -235,32 +235,30 @@ def main():
     print(test_expense.get_info())
     test_dict = create_dict_from_expense_obj(test_expense)
     print(test_dict)
-    # save_expense_data_dict(test_dict)
+    save_expense_data_dict(test_dict)
 
 
     ####################################### ##### #### #### ## ### #######################################
     ####################################### # # # ### # ### ## # # #######################################
     ####################################### ## ## ## ### ## ## ### #######################################
+
+
 # a, a+, w, w+, and r+ <- note to self learn about these
 def save_expense_data_dict(input: dict[str, Union[str, int]]) -> bool:
     path = os.getcwd() + r"\Expense Data.json"
-    with open(path) as f:
+    with open(path, 'r+') as f:
         data = json.load(f)
-        # Check if is a list
-        # if isinstance(data, list):
-        data.append({'Expense': input})
+
+        expense_data = data["Expense"]
+        print("EXPENSE DATA" + str(expense_data))
+        expense_data.append(input)
+        print("EXPENSE DATA APPENDED" + str(expense_data))
+
+        data.update({'Expense': expense_data})
         f.seek(0)
         json.dump(data, f, indent=4)
         f.truncate()
-    
 
-    # file_data.update(input)
-
-    # with open(path, 'w') as f:
-    #     json.dump(file_data, f)
-
-    # file_data["Expense"].append(input)
-    # json.dump(file_data, f, indent=4)
     return True
     
 
