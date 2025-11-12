@@ -13,7 +13,7 @@ import json
 
 # Need to implement some checks here for new files and last_used_ID being null / none
 class UniqueIDGenerator():
-    _last_ID_used: int
+    _last_used_ID: int
 
     @staticmethod
     def __init__(last_used_ID: int):
@@ -26,11 +26,11 @@ class UniqueIDGenerator():
     
     @staticmethod
     def get_last_used_ID() -> int:
-        return UniqueIDGenerator._last_ID_used
+        return UniqueIDGenerator._last_used_ID
     
     @staticmethod
     def set_last_used_ID(last_used_ID: int):
-        UniqueIDGenerator._last_ID_used = last_used_ID
+        UniqueIDGenerator._last_used_ID = last_used_ID
 
 # Enum probably not the best choice as modification in future may produce errors
 class ExpenseType(Enum):
@@ -216,6 +216,7 @@ def main():
     if save_file_exists() == True:
         last_used_ID: int = int(load_last_used_ID())
         UniqueIDGenerator.set_last_used_ID(last_used_ID)
+        # print(UniqueIDGenerator.get_last_used_ID())
         expense_list = load_expense_data()
         reoccurring_expense_list = load_reoccurring_expense_data()
     else:
@@ -229,14 +230,11 @@ def main():
     CurrrentExpenseLists.set_current_expense_list(expense_list)
     CurrrentExpenseLists.set_current_reoccurrring_expense_list(reoccurring_expense_list)
 
-    # test_dict1 = create_dict_from_expense_obj(expense_list[0])
-    # test_dict2 = create_dict_from_reoccurring_expense_obj(reoccurring_expense_list[0])
-    # print(test_dict1)
-    # print(test_dict2)
 
     test_expense = Expense(UniqueIDGenerator.generate_ID(), "Car Rego", 120000, ExpenseType(1), date(2025, 11, 5))
-    test_dict = create_dict_from_expense_obj(test_expense)
-    save_expense_data_dict(test_dict)
+    print(test_expense.get_info())
+    # test_dict = create_dict_from_expense_obj(test_expense)
+    # save_expense_data_dict(test_dict)
 
 
     ####################################### ##### #### #### ## ### #######################################
