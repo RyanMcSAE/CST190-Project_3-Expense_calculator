@@ -234,23 +234,35 @@ def main():
     # print(test_dict1)
     # print(test_dict2)
 
-    test_expense = Expense(8, "Car Rego", 120000, ExpenseType(1), date(2025, 11, 5))
+    test_expense = Expense(UniqueIDGenerator.generate_ID(), "Car Rego", 120000, ExpenseType(1), date(2025, 11, 5))
     test_dict = create_dict_from_expense_obj(test_expense)
-    save_expense_data(test_dict)
+    save_expense_data_dict(test_dict)
 
 
     ####################################### ##### #### #### ## ### #######################################
     ####################################### # # # ### # ### ## # # #######################################
     ####################################### ## ## ## ### ## ## ### #######################################
 # a, a+, w, w+, and r+ <- note to self learn about these
-def save_expense_data(input) -> bool:
+def save_expense_data_dict(input: dict[str, Union[str, int]]) -> bool:
     path = os.getcwd() + r"\Expense Data.json"
-    with open(path, 'r+') as f:
-        file_data = json.load(f)
-        file_data["Expense"].append(input)
-        print(file_data)
-        json.dump(file_data, f)
-        return True
+    with open(path) as f:
+        data = json.load(f)
+        # Check if is a list
+        # if isinstance(data, list):
+        data.append({'Expense': input})
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
+    
+
+    # file_data.update(input)
+
+    # with open(path, 'w') as f:
+    #     json.dump(file_data, f)
+
+    # file_data["Expense"].append(input)
+    # json.dump(file_data, f, indent=4)
+    return True
     
 
 def testing():
