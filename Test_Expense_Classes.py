@@ -233,7 +233,8 @@ def main():
 
     test_expense = Expense(UniqueIDGenerator.generate_ID(), "Car Rego", 120000, ExpenseType(1), date(2025, 11, 5))
     print(test_expense.get_info())
-    # test_dict = create_dict_from_expense_obj(test_expense)
+    test_dict = create_dict_from_expense_obj(test_expense)
+    print(test_dict)
     # save_expense_data_dict(test_dict)
 
 
