@@ -236,6 +236,7 @@ def main():
     test_dict = create_dict_from_expense_obj(test_expense)
     print(test_dict)
     save_expense_data_dict(test_dict)
+    save_ID_to_file(UniqueIDGenerator.get_last_used_ID())
 
 
     ####################################### ##### #### #### ## ### #######################################
@@ -243,42 +244,45 @@ def main():
     ####################################### ## ## ## ### ## ## ### #######################################
 
 
+def save_ID_to_file(last_used_id: int):
+    path = os.getcwd() + r'\Expense Data.json'
+    with open(path, 'r+') as f:
+        data = json.load(f)
+        data.update({"LastUsedID": last_used_id})
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
+
+
 # a, a+, w, w+, and r+ <- note to self learn about these
-def save_expense_data_dict(input: dict[str, Union[str, int]]) -> bool:
+def save_expense_data_dict(input: dict[str, Union[str, int]]):
     path = os.getcwd() + r"\Expense Data.json"
     with open(path, 'r+') as f:
         data = json.load(f)
 
         expense_data = data["Expense"]
-        print("EXPENSE DATA" + str(expense_data))
         expense_data.append(input)
-        print("EXPENSE DATA APPENDED" + str(expense_data))
 
         data.update({'Expense': expense_data})
         f.seek(0)
         json.dump(data, f, indent=4)
         f.truncate()
-
-    return True
     
+def save_reoccurring_expense_data_dict(input: dict[str, Union[str, int, Union[str, int, Expense]]]):
+    path = os.getcwd() + r'\Expense Data.json'
+    with open(path, 'r+') as f:
+        data = json.load(f)
 
-def testing():
-    print("\n" + "------------------------- TESTING -------------------------" + "\n")
-    UniqueIDGenerator(0)
+        reoccurring_expense_data = data["ReoccurringExpense"]
+        reoccurring_expense_data.append(input)
 
-    reoccurring_expenses = load_reoccurring_expense_data()
-    print(reoccurring_expenses[0].get_info())
+        data.update({"ReoccurringExpense": reoccurring_expense_data})
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
 
-    v = testing_generate_reoccurring_expense()
-    print(v.get_info())
 
-def testing_generate_expense() -> Expense:
-    n = Expense(UniqueIDGenerator.generate_ID(), "Electricity Bill", 14508, ExpenseType(1), date(2022, 12, 10))
-    return n
 
-def testing_generate_reoccurring_expense() -> ReoccurringExpense:
-    m = ReoccurringExpense(UniqueIDGenerator.generate_ID(), "Hamburger Payments", 1500, ExpenseType(3), 3, date(2025,9,9), date(2025, 11, 11))
-    return m
     
 def create_dict_from_expense_obj(expense_obj_input: Expense) -> dict[str, Union[int, str]]:
     output_dict: dict[str, Union[int, str]] = {}
@@ -435,10 +439,25 @@ def save_file_delete() -> bool:
     except:
         return False
 
-def save_expense_to_file(Expense) -> bool:
-    return True
 
 
+def testing():
+    print("\n" + "------------------------- TESTING -------------------------" + "\n")
+    UniqueIDGenerator(0)
+
+    reoccurring_expenses = load_reoccurring_expense_data()
+    print(reoccurring_expenses[0].get_info())
+
+    v = testing_generate_reoccurring_expense()
+    print(v.get_info())
+
+def testing_generate_expense() -> Expense:
+    n = Expense(UniqueIDGenerator.generate_ID(), "Electricity Bill", 14508, ExpenseType(1), date(2022, 12, 10))
+    return n
+
+def testing_generate_reoccurring_expense() -> ReoccurringExpense:
+    m = ReoccurringExpense(UniqueIDGenerator.generate_ID(), "Hamburger Payments", 1500, ExpenseType(3), 3, date(2025,9,9), date(2025, 11, 11))
+    return m
 
     
 # Fuck python and this shitty conditional statement having to exist at the very end of the code for anythin above it run 
