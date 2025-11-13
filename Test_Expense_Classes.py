@@ -212,17 +212,17 @@ class CurrrentExpenseLists:
 def main():
     expense_list: List[Expense]
     reoccurring_expense_list: List[ReoccurringExpense]
-    # Check if save file exists and load it into the program is if does
+
+    # Check if save file exists and load it into the program is if does, otherwise create empty save file
     if save_file_exists() == True:
         last_used_ID: int = int(load_last_used_ID())
         UniqueIDGenerator.set_last_used_ID(last_used_ID)
-        # print(UniqueIDGenerator.get_last_used_ID())
-        expense_list = load_expense_data()
-        reoccurring_expense_list = load_reoccurring_expense_data()
+        expense_list: List[Expense] = load_expense_data()
+        reoccurring_expense_list: List[ReoccurringExpense] = load_reoccurring_expense_data()
     else:
         UniqueIDGenerator.set_last_used_ID(0)
-        expense_list = []
-        reoccurring_expense_list = []
+        expense_list: List[Expense] = []
+        reoccurring_expense_list: List[ReoccurringExpense] = []
         create_save_file()
 
     # Load CurrentExpenseLists static class with expense lists
@@ -243,6 +243,9 @@ def main():
     ####################################### # # # ### # ### ## # # #######################################
     ####################################### ## ## ## ### ## ## ### #######################################
 
+def save_current_data_to_file():
+    save_ID_to_file(UniqueIDGenerator.get_last_used_ID())
+
 
 def save_ID_to_file(last_used_id: int):
     path = os.getcwd() + r'\Expense Data.json'
@@ -254,6 +257,7 @@ def save_ID_to_file(last_used_id: int):
         f.truncate()
 
 
+# Saves an expense to file using expense dictionary input
 # a, a+, w, w+, and r+ <- note to self learn about these
 def save_expense_data_dict(input: dict[str, Union[str, int]]):
     path = os.getcwd() + r"\Expense Data.json"
@@ -267,7 +271,8 @@ def save_expense_data_dict(input: dict[str, Union[str, int]]):
         f.seek(0)
         json.dump(data, f, indent=4)
         f.truncate()
-    
+
+# Saves a reoccurring expense to file using a reoccurring expense dictionary input    
 def save_reoccurring_expense_data_dict(input: dict[str, Union[str, int, Union[str, int, Expense]]]):
     path = os.getcwd() + r'\Expense Data.json'
     with open(path, 'r+') as f:
@@ -283,7 +288,7 @@ def save_reoccurring_expense_data_dict(input: dict[str, Union[str, int, Union[st
 
 
 
-    
+# Outputs a dictionary from an Expense object (for later use when saving to json file)   
 def create_dict_from_expense_obj(expense_obj_input: Expense) -> dict[str, Union[int, str]]:
     output_dict: dict[str, Union[int, str]] = {}
     output_dict["id"] = int(expense_obj_input.get_ID())
@@ -294,6 +299,7 @@ def create_dict_from_expense_obj(expense_obj_input: Expense) -> dict[str, Union[
     output_dict["date_of_expense"] = date_string
     return output_dict
 
+# Outputs a dictionary from a ReoccurringExpense object (for later use when saving to json file)   
 def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: ReoccurringExpense) -> dict[str, Union[int, str, List[dict[str, Union[int, str]]]]]:
     output_dict: dict[str, Union[int, str, List[dict[str, Union[int, str]]]]] = {}
     output_dict["id"] = int(reoccurring_expense_input.get_ID())
@@ -314,7 +320,7 @@ def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: Reoccurr
 
     return output_dict
 
-
+# Outputs an 8 character string representing a date object in YYYYMMDD format
 def create_string_from_date(date_input: date) -> str:
     year = date_input.year
     month = date_input.month
@@ -323,6 +329,7 @@ def create_string_from_date(date_input: date) -> str:
     return s
 
 
+# Outputs an Expense object using expense dictionary input
 def create_expense_obj_from_dict(expense_input: dict[str, Union[int, str]]) -> Expense:
     id: int = int(expense_input["id"])
     name: str = str(expense_input["name"])
@@ -340,6 +347,7 @@ def create_expense_obj_from_dict(expense_input: dict[str, Union[int, str]]) -> E
     expense: Expense = Expense(id, name, amount, expense_type, date_of_expense)
     return expense
 
+# Reads and outputs the last used ID attribute from a json file 
 def load_last_used_ID() -> int:
     path = os.getcwd() + r"\Expense Data.json"
     with open(path) as f:
@@ -417,11 +425,13 @@ def load_reoccurring_expense_data() -> List[ReoccurringExpense]:
     return reoccurring_expenses
 
 
+# Checks if a save file exists and returns True if a file exists
 def save_file_exists() -> bool:
     path = os.getcwd() + r'\Expense Data.json'
     file_exists = os.path.exists(path)
     return file_exists
 
+# Creates a blank json file in directory
 def create_save_file() -> bool:
     try:
         path = os.getcwd() + r'\Expense Data.json'
@@ -430,7 +440,8 @@ def create_save_file() -> bool:
         return True
     except:
         return False
-    
+
+# Deletes the json save file in directory    
 def save_file_delete() -> bool:
     try:
         path = os.getcwd() + r'\Expense Data.json'

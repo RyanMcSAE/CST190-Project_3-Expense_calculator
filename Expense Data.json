@@ -21,41 +21,6 @@
             "amount": 120000,
             "expense_type": 1,
             "date_of_expense": "2025115"
-        },
-        {
-            "id": 8,
-            "name": "Car Rego",
-            "amount": 120000,
-            "expense_type": 1,
-            "date_of_expense": "2025115"
-        },
-        {
-            "id": 8,
-            "name": "Car Rego",
-            "amount": 120000,
-            "expense_type": 1,
-            "date_of_expense": "2025115"
-        },
-        {
-            "id": 8,
-            "name": "Car Rego",
-            "amount": 120000,
-            "expense_type": 1,
-            "date_of_expense": "2025115"
-        },
-        {
-            "id": 8,
-            "name": "Car Rego",
-            "amount": 120000,
-            "expense_type": 1,
-            "date_of_expense": "2025115"
-        },
-        {
-            "id": 8,
-            "name": "Car Rego",
-            "amount": 120000,
-            "expense_type": 1,
-            "date_of_expense": "2025115"
         }
     ],
     "ReoccurringExpense": [
