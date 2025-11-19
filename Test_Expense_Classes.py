@@ -233,95 +233,13 @@ def main():
     CurrrentExpenseLists.set_current_reoccurrring_expense_list(reoccurring_expense_list)
 
 
-    # A basic UI implemenmtation ripped straight out of the 90's... but it works 
-    a1: str = "┏---------------------------------------┓"
-    a2: str = "|                  MENU                 |"
-    a3: str = "|               - Ledger -              |"
-    a4: str = "| ne  = New Expense                     |"
-    a5: str = "| nre = New Reoccurring Expense         |"
-    a6: str = "| ve  = View Expenses                   |"
-    a7: str = "| d   = Delete Expense                  |"
-    a8: str = "| q   = Quit Program                    |"
-    a9: str = "┗---------------------------------------┛"
-
-    menu:str = ""
-    menu = a1 + "\n" + a2 + "\n" +a3 + "\n" +a4 + "\n" +a5 + "\n" + a6 + "\n" +a7 + "\n" +a8 + "\n" +a9 + "\n"
-
-    # This is the menu / main loop of the program, it's an ugly thing to look at (code wise) and needs to be seperated into multiple functions / classes and needs to be refactored but I have no more time left (I spent all my effort on the foudations)
-    # It also needs a bunch of checks to validate inputs (is input an int, is it in the right format, is the data within acceptable thresholds, prompting to re-input, etc)
-    # All of which I know how to do but don't have the time to implement 
-    user_input: str = input(menu)
-    while user_input != "q":
-
-        # New Expense
-        if user_input == "ne":
-            name: str = input("Name of expense? ")
-            amount_float: float = float(input("Amount in dollars? $"))
-            amount_cents: int = int(amount_float / 100)
-            for type in ExpenseType:
-                # print(f"{type.name} = {type.value}")
-                print(f"{type.value} = {type.name}")
-            exp_type: ExpenseType = ExpenseType(int(input("Expense type number? ")))
-            date_str: str = input('Date of expense? "YYYYMMDD" :')
-            exp_date: date = create_date_from_string(date_str)
-            new_exp: Expense = Expense(UniqueIDGenerator.generate_ID(), name, amount_cents, exp_type, exp_date)
-            save_expense_data_dict(create_dict_from_expense_obj(new_exp))
-            print("Expense added!")
-            print()
-        
-        # New Reoccurring Expense
-        if user_input == "nre":
-            name: str = input("Name of expense? ")
-            amount_float: float = float(input("Amount in dollars? $"))
-            amount_cents: int = int(amount_float / 100)
-            for type in ExpenseType:
-                # print(f"{type.name} = {type.value}")
-                print(f"{type.value} = {type.name}")
-            exp_type: ExpenseType = ExpenseType(int(input("Expense type number? ")))
-            frequency: int = int(input("Frequency of expense in days? "))
-            start_date_str: str = input('Start date of expense? "YYYYMMDD" :')
-            start_date: date = create_date_from_string(start_date_str)
-            end_date_str: str = input('Start date of expense? "YYYYMMDD" :')
-            end_date: date = create_date_from_string(end_date_str)
-            new_reoccurring_expense: ReoccurringExpense = ReoccurringExpense(UniqueIDGenerator.generate_ID(), name, amount_cents, exp_type, frequency, start_date, end_date)
-            new_reoccurring_expense_dict = create_dict_from_reoccurring_expense_obj(new_reoccurring_expense)
-            save_reoccurring_expense_data_dict(new_reoccurring_expense_dict) # This works but needs intelisense conditioning // not the right words but I know what I mean 
-            print("Expense added!")
-            print()
-
-        # Show expenses 
-        if user_input == "ve":
-            output_str: str = ""
-
-            expenses = load_expense_data()
-            for exp in expenses:
-                # "Expense.getinfo()" is a custome object function to format and return a string with info on the expense
-                output_str += exp.get_info()
-                output_str += "\n"
-
-            reoccurring_expenses = load_reoccurring_expense_data()
-            for reo_exp in reoccurring_expenses:
-                # "ReoccurringExpense.getinfo()" is a custome object function to format and return a string with info on the reoccurring expense
-                output_str += reo_exp.get_info()
-                output_str += "\n"
-
-            print(output_str)
-
-
-        if user_input == "d":
-            exp_input: int = int(input("Select expense ID to delete: "))
-            delete_expense_from_ID(exp_input)
-
-
-
-        user_input: str = input(menu)
 
 
     ####################################### ##### #### #### ## ### #######################################
     ####################################### # # # ### # ### ## # # #######################################
     ####################################### ## ## ## ### ## ## ### #######################################
 
-# This function passes the exppense and reoccurring expense ID to be deleted onto the each seperate function
+# This function passes the exppense and reoccurring expense ID to be deleted to the seperate delete functions
 # It should be ammended to first check whether an expense ID is an Expense or ReoccurringExpense first 
 # Running both is done due to time constraints of integerating and proper checking function first
 def delete_expense_from_ID(id: int):
@@ -628,6 +546,89 @@ def testing_generate_reoccurring_expense() -> ReoccurringExpense:
     m = ReoccurringExpense(UniqueIDGenerator.generate_ID(), "Hamburger Payments", 1500, ExpenseType(3), 3, date(2025,9,9), date(2025, 11, 11))
     return m
 
+def obsolete_GUI_runtime():
+    # A basic UI implemenmtation ripped straight out of the 90's... but it works 
+    a1: str = "┏---------------------------------------┓"
+    a2: str = "|                  MENU                 |"
+    a3: str = "|               - Ledger -              |"
+    a4: str = "| ne  = New Expense                     |"
+    a5: str = "| nre = New Reoccurring Expense         |"
+    a6: str = "| ve  = View Expenses                   |"
+    a7: str = "| d   = Delete Expense                  |"
+    a8: str = "| q   = Quit Program                    |"
+    a9: str = "┗---------------------------------------┛"
+
+    menu:str = ""
+    menu = a1 + "\n" + a2 + "\n" +a3 + "\n" +a4 + "\n" +a5 + "\n" + a6 + "\n" +a7 + "\n" +a8 + "\n" +a9 + "\n"
+
+    # This is the menu / main loop of the program, it's an ugly thing to look at (code wise) and needs to be seperated into multiple functions / classes and needs to be refactored but I have no more time left (I spent all my effort on the foudations)
+    # It also needs a bunch of checks to validate inputs (is input an int, is it in the right format, is the data within acceptable thresholds, prompting to re-input, etc)
+    # All of which I know how to do but don't have the time to implement 
+    user_input: str = input(menu)
+    while user_input != "q":
+
+        # New Expense
+        if user_input == "ne":
+            name: str = input("Name of expense? ")
+            amount_float: float = float(input("Amount in dollars? $"))
+            amount_cents: int = int(amount_float / 100)
+            for type in ExpenseType:
+                # print(f"{type.name} = {type.value}")
+                print(f"{type.value} = {type.name}")
+            exp_type: ExpenseType = ExpenseType(int(input("Expense type number? ")))
+            date_str: str = input('Date of expense? "YYYYMMDD" :')
+            exp_date: date = create_date_from_string(date_str)
+            new_exp: Expense = Expense(UniqueIDGenerator.generate_ID(), name, amount_cents, exp_type, exp_date)
+            save_expense_data_dict(create_dict_from_expense_obj(new_exp))
+            print("Expense added!")
+            print()
+        
+        # New Reoccurring Expense
+        if user_input == "nre":
+            name: str = input("Name of expense? ")
+            amount_float: float = float(input("Amount in dollars? $"))
+            amount_cents: int = int(amount_float / 100)
+            for type in ExpenseType:
+                # print(f"{type.name} = {type.value}")
+                print(f"{type.value} = {type.name}")
+            exp_type: ExpenseType = ExpenseType(int(input("Expense type number? ")))
+            frequency: int = int(input("Frequency of expense in days? "))
+            start_date_str: str = input('Start date of expense? "YYYYMMDD" :')
+            start_date: date = create_date_from_string(start_date_str)
+            end_date_str: str = input('Start date of expense? "YYYYMMDD" :')
+            end_date: date = create_date_from_string(end_date_str)
+            new_reoccurring_expense: ReoccurringExpense = ReoccurringExpense(UniqueIDGenerator.generate_ID(), name, amount_cents, exp_type, frequency, start_date, end_date)
+            new_reoccurring_expense_dict = create_dict_from_reoccurring_expense_obj(new_reoccurring_expense)
+            save_reoccurring_expense_data_dict(new_reoccurring_expense_dict) # This works but needs intelisense conditioning // not the right words but I know what I mean 
+            print("Expense added!")
+            print()
+
+        # Show expenses 
+        if user_input == "ve":
+            output_str: str = ""
+
+            expenses = load_expense_data()
+            for exp in expenses:
+                # "Expense.getinfo()" is a custome object function to format and return a string with info on the expense
+                output_str += exp.get_info()
+                output_str += "\n"
+
+            reoccurring_expenses = load_reoccurring_expense_data()
+            for reo_exp in reoccurring_expenses:
+                # "ReoccurringExpense.getinfo()" is a custome object function to format and return a string with info on the reoccurring expense
+                output_str += reo_exp.get_info()
+                output_str += "\n"
+
+            print(output_str)
+
+
+        if user_input == "d":
+            exp_input: int = int(input("Select expense ID to delete: "))
+            delete_expense_from_ID(exp_input)
+
+
+
+        user_input: str = input(menu)
     
 # Fuck python and this shitty conditional statement having to exist at the very end of the code for anythin above it run 
 if __name__ == "__main__":
