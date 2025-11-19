@@ -12,6 +12,7 @@ import json
 
 
 # Need to implement some checks here for new files and last_used_ID being null / none
+# ^ Checks have been handled in loading data functions during start up
 class UniqueIDGenerator():
     _last_used_ID: int
 
@@ -98,7 +99,7 @@ class Expense:
         s += "Name: " + str(self._name) + "\n"
         s += "Amount: $" + str(self.get_amount_in_decimal()) + "\n"
         s += "Expense Type: " + str(self.get_expense_type()) + "\n"
-        s += "Date of Expense: " + str(self.get_date_of_expense())
+        s += "Date of Expense: " + str(self.get_date_of_expense()) + "\n"
         return s
 
 class ReoccurringExpense:
@@ -227,25 +228,160 @@ def main():
 
     # Load CurrentExpenseLists static class with expense lists
     # Not sure if this a good way to go about it but the static CurrentExpenseList class will hold the currently used expense lists and can be called easily by other functions
+    # THESE AREN'T USED IN THE CURRRENT BUILD
     CurrrentExpenseLists.set_current_expense_list(expense_list)
     CurrrentExpenseLists.set_current_reoccurrring_expense_list(reoccurring_expense_list)
 
 
-    test_expense = Expense(UniqueIDGenerator.generate_ID(), "Car Rego", 120000, ExpenseType(1), date(2025, 11, 5))
-    print(test_expense.get_info())
-    test_dict = create_dict_from_expense_obj(test_expense)
-    print(test_dict)
-    save_expense_data_dict(test_dict)
-    save_ID_to_file(UniqueIDGenerator.get_last_used_ID())
+    # A basic UI implemenmtation ripped straight out of the 90's... but it works 
+    a1: str = "┏---------------------------------------┓"
+    a2: str = "|                  MENU                 |"
+    a3: str = "|               - Ledger -              |"
+    a4: str = "| ne  = New Expense                     |"
+    a5: str = "| nre = New Reoccurring Expense         |"
+    a6: str = "| ve  = View Expenses                   |"
+    a7: str = "| d   = Delete Expense                  |"
+    a8: str = "| q   = Quit Program                    |"
+    a9: str = "┗---------------------------------------┛"
+
+    menu:str = ""
+    menu = a1 + "\n" + a2 + "\n" +a3 + "\n" +a4 + "\n" +a5 + "\n" + a6 + "\n" +a7 + "\n" +a8 + "\n" +a9 + "\n"
+
+    # This is the menu / main loop of the program, it's an ugly thing to look at (code wise) and needs to be seperated into multiple functions / classes and needs to be refactored but I have no more time left (I spent all my effort on the foudations)
+    # It also needs a bunch of checks to validate inputs (is input an int, is it in the right format, is the data within acceptable thresholds, prompting to re-input, etc)
+    # All of which I know how to do but don't have the time to implement 
+    user_input: str = input(menu)
+    while user_input != "q":
+
+        # New Expense
+        if user_input == "ne":
+            name: str = input("Name of expense? ")
+            amount_float: float = float(input("Amount in dollars? $"))
+            amount_cents: int = int(amount_float / 100)
+            for type in ExpenseType:
+                # print(f"{type.name} = {type.value}")
+                print(f"{type.value} = {type.name}")
+            exp_type: ExpenseType = ExpenseType(int(input("Expense type number? ")))
+            date_str: str = input('Date of expense? "YYYYMMDD" :')
+            exp_date: date = create_date_from_string(date_str)
+            new_exp: Expense = Expense(UniqueIDGenerator.generate_ID(), name, amount_cents, exp_type, exp_date)
+            save_expense_data_dict(create_dict_from_expense_obj(new_exp))
+            print("Expense added!")
+            print()
+        
+        # New Reoccurring Expense
+        if user_input == "nre":
+            name: str = input("Name of expense? ")
+            amount_float: float = float(input("Amount in dollars? $"))
+            amount_cents: int = int(amount_float / 100)
+            for type in ExpenseType:
+                # print(f"{type.name} = {type.value}")
+                print(f"{type.value} = {type.name}")
+            exp_type: ExpenseType = ExpenseType(int(input("Expense type number? ")))
+            frequency: int = int(input("Frequency of expense in days? "))
+            start_date_str: str = input('Start date of expense? "YYYYMMDD" :')
+            start_date: date = create_date_from_string(start_date_str)
+            end_date_str: str = input('Start date of expense? "YYYYMMDD" :')
+            end_date: date = create_date_from_string(end_date_str)
+            new_reoccurring_expense: ReoccurringExpense = ReoccurringExpense(UniqueIDGenerator.generate_ID(), name, amount_cents, exp_type, frequency, start_date, end_date)
+            new_reoccurring_expense_dict = create_dict_from_reoccurring_expense_obj(new_reoccurring_expense)
+            save_reoccurring_expense_data_dict(new_reoccurring_expense_dict) # This works but needs intelisense conditioning // not the right words but I know what I mean 
+            print("Expense added!")
+            print()
+
+        # Show expenses 
+        if user_input == "ve":
+            output_str: str = ""
+
+            expenses = load_expense_data()
+            for exp in expenses:
+                # "Expense.getinfo()" is a custome object function to format and return a string with info on the expense
+                output_str += exp.get_info()
+                output_str += "\n"
+
+            reoccurring_expenses = load_reoccurring_expense_data()
+            for reo_exp in reoccurring_expenses:
+                # "ReoccurringExpense.getinfo()" is a custome object function to format and return a string with info on the reoccurring expense
+                output_str += reo_exp.get_info()
+                output_str += "\n"
+
+            print(output_str)
+
+
+        if user_input == "d":
+            exp_input: int = int(input("Select expense ID to delete: "))
+            delete_expense_from_ID(exp_input)
+
+
+
+        user_input: str = input(menu)
 
 
     ####################################### ##### #### #### ## ### #######################################
     ####################################### # # # ### # ### ## # # #######################################
     ####################################### ## ## ## ### ## ## ### #######################################
 
+# This function passes the exppense and reoccurring expense ID to be deleted onto the each seperate function
+# It should be ammended to first check whether an expense ID is an Expense or ReoccurringExpense first 
+# Running both is done due to time constraints of integerating and proper checking function first
+def delete_expense_from_ID(id: int):
+    delete_expense(id)
+    delete_reoccurring_expense(id)
+
+
+# Deletes an Expense obj in the save file 
+def delete_expense(input_ID: int):
+    path = os.getcwd() + r"\Expense Data.json"
+    with open(path, 'r+') as f:
+        data = json.load(f)
+
+        expense_data = data["Expense"]
+
+        for exp in expense_data:
+            if exp.get('id') == input_ID:
+                expense_data.remove(exp)
+                break
+
+        data.update({'Expense': expense_data})
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
+
+        save_current_ID_to_file()
+
+# Deletes a ReoccurringExpense obj in the save file 
+def delete_reoccurring_expense(input_ID: int):
+    path = os.getcwd() + r"\Expense Data.json"
+    with open(path, 'r+') as f:
+        data = json.load(f)
+
+        expense_data = data["ReoccurringExpense"]
+
+        for exp in expense_data:
+            if exp.get('id') == input_ID:
+                expense_data.remove(exp)
+                break
+
+        data.update({'ReoccurringExpense': expense_data})
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
+
+        save_current_ID_to_file()
+
+
 def save_current_data_to_file():
     save_ID_to_file(UniqueIDGenerator.get_last_used_ID())
 
+def save_current_ID_to_file():
+    path = os.getcwd() + r'\Expense Data.json'
+    with open(path, 'r+') as f:
+        data = json.load(f)
+        last_used_ID: int = UniqueIDGenerator.get_last_used_ID()
+        data.update({"LastUsedID": last_used_ID})
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
 
 def save_ID_to_file(last_used_id: int):
     path = os.getcwd() + r'\Expense Data.json'
@@ -255,6 +391,8 @@ def save_ID_to_file(last_used_id: int):
         f.seek(0)
         json.dump(data, f, indent=4)
         f.truncate()
+
+        save_current_ID_to_file()
 
 
 # Saves an expense to file using expense dictionary input
@@ -272,6 +410,10 @@ def save_expense_data_dict(input: dict[str, Union[str, int]]):
         json.dump(data, f, indent=4)
         f.truncate()
 
+        save_current_ID_to_file()
+
+
+
 # Saves a reoccurring expense to file using a reoccurring expense dictionary input    
 def save_reoccurring_expense_data_dict(input: dict[str, Union[str, int, Union[str, int, Expense]]]):
     path = os.getcwd() + r'\Expense Data.json'
@@ -285,6 +427,8 @@ def save_reoccurring_expense_data_dict(input: dict[str, Union[str, int, Union[st
         f.seek(0)
         json.dump(data, f, indent=4)
         f.truncate()
+
+        save_current_ID_to_file()
 
 
 
@@ -306,6 +450,7 @@ def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: Reoccurr
     output_dict["name"] = str(reoccurring_expense_input.get_name())
     output_dict["amount"] = int(reoccurring_expense_input.get_amount_in_cents())
     output_dict["expense_type"] = int(reoccurring_expense_input.get_expense_type_index())
+    output_dict["frequency"] = int(reoccurring_expense_input.get_frequency())
     start_date_string = create_string_from_date(reoccurring_expense_input.get_start_date())
     output_dict["start_date"] = start_date_string
     end_date_string = create_string_from_date(reoccurring_expense_input.get_end_date())
@@ -324,9 +469,22 @@ def create_dict_from_reoccurring_expense_obj(reoccurring_expense_input: Reoccurr
 def create_string_from_date(date_input: date) -> str:
     year = date_input.year
     month = date_input.month
+    if month < 10:
+        month = "0" + str(month)
     day = date_input.day
+    if day < 10:
+        day = "0" + str(day)
     s = str(year) + str(month) + str(day)
     return s
+
+# Outputs a date converted from a YYYYMMDD string input
+def create_date_from_string(date_string_input: str) -> date:
+    s: str = date_string_input
+    year: int = int(s[0:4])
+    month: int = int(s[4:6])
+    day: int = int(s[6:8])
+    date_of_expense: date = date(year, month, day)
+    return date_of_expense
 
 
 # Outputs an Expense object using expense dictionary input
